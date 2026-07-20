@@ -68,7 +68,7 @@ Métricas calculadas sobre el conjunto de prueba (90 días, oct-dic 2024), con r
 | Modelo | RMSE (MW) | MAE (MW) | MAPE (%) | sMAPE (%) | R² |
 |---|---|---|---|---|---|
 | **XGBoost** | 91.76 | 73.56 | 2.89 | 2.93 | 0.869 |
-| **N-BEATS** | 94.85| 73.24 | 2.93 | 2.91 | 0.86 |
+| **N-BEATS** | 94.85| 73.24 | 2.93 | 2.91 | 0.860 |
 
 
 
