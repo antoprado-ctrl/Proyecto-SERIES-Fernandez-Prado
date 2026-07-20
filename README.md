@@ -135,25 +135,23 @@ XGBoost por debajo de N-BEATS en las tres métricas, consistente con la tabla de
 > comparación ilustrativa, no como resultado principal.
 
 ## Conclusiones
-
-- **XGBoost superó a N-BEATS** en las cinco métricas, con margen consistente (RMSE ~16% menor,
-  MAPE ~0.5 puntos porcentuales menor). Bajo la misma metodología de evaluación, el modelo más
-  simple volvió a ganarle al más complejo.
-- El **R² de ambos modelos (0.867 y 0.812) es sustancialmente más alto** que en un pronóstico
+* XGBoost superó a N-BEATS en RMSE, MAPE, sMAPE y R², pero con un margen mucho más chico que
+  antes (RMSE ~3% menor, no ~16%) — y N-BEATS lo superó levemente en MAE (73.25 vs. 73.56 MW).
+  Al igualar el presupuesto de búsqueda de hiperparámetros (40 trials para ambos, antes 10 para
+  N-BEATS), la diferencia entre el modelo "simple" y el "complejo" casi desaparece.
+* El R² de ambos modelos (0.869 y 0.860) es sustancialmente más alto que en un pronóstico
   recursivo de horizonte largo: el horizonte corto (1 día) con reajuste diario contra datos
   reales evita la acumulación de error que sí se observa en pronósticos multi-paso sin reajuste.
-- Un **MAPE de ~3%** en la demanda diaria promedio es un resultado sólido para forecasting de
-  energía a un día.
-- El costo de este desempeño es **computacional**: cada uno de los 90 días de test implicó
-  reentrenar ambos modelos desde cero. XGBoost lo resuelve en segundos por reentrenamiento;
-  N-BEATS necesitó un presupuesto fijo de épocas (sin early stopping) para que el walk-forward
-  completo fuera viable en tiempo razonable.
-- La comparación entre el gráfico "predicción vs. real" (reajuste diario) y el gráfico "modelo
-  cargado desde disco" (sin reajuste) es la evidencia más elocuente del proyecto: el mismo
-  modelo XGBoost pasa de seguir la curva real casi perfectamente (MAPE ~3%) a mantenerse
-  sistemáticamente ~300-400 MW por encima de la realidad durante semanas — una demostración
-  directa y cuantificada de *concept drift*.
-
+* Un MAPE de ~2.9% en la demanda diaria promedio (ambos modelos, prácticamente empatados) es un
+  resultado sólido para forecasting de energía a un día.
+* El costo de este desempeño sigue siendo distinto entre modelos: XGBoost reentrena en segundos
+  por día de test; N-BEATS, incluso corriendo en GPU, requiere bastante más tiempo total por sus
+  40 reentrenamientos diarios durante la evaluación walk-forward.
+* La comparación entre el gráfico "predicción vs. real" (reajuste diario) y el gráfico "modelo
+  cargado desde disco" (sin reajuste) sigue siendo la evidencia más elocuente del proyecto: el
+  mismo modelo pasa de seguir la curva real casi perfectamente (MAPE ~2.9%) a mantenerse
+  sistemáticamente cientos de MW por encima de la realidad durante semanas cuando no se
+  reajusta — una demostración directa y cuantificada de concept drift.
 ## Estructura del repositorio
 
 ```
