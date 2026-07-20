@@ -57,10 +57,47 @@ Licencia CC BY-NC-SA 4.0.
 
 ## Modelos implementados
 
-| Modelo | Categoría | Covariates usadas | Optimización |
+| Modelo | Categoría | Qué usa como "pistas" adicionales | Cuántas configuraciones probó |
 |---|---|---|---|
-| **XGBoost** | Machine Learning | `future_covariates`: temperatura del día a predecir | Optuna (40 trials): lags, max_depth, learning_rate, subsample, colsample_bytree. Early stopping (tope `n_estimators=50`). |
-| **N-BEATS** | Deep Learning | `past_covariates`: temperatura, nubosidad, feriado, fin de semana, vacaciones escolares | Optuna (10 trials): input_chunk_length, num_stacks, layer_widths, learning_rate, batch_size. Early stopping (patience=8, tope 50 épocas). |
+| **XGBoost** | Machine Learning | Temperatura del día que predice | 40 |
+| **N-BEATS** | Deep Learning | Temperatura, nubosidad, feriados, fin de semana, vacaciones escolares | 10 |
+
+### XGBoost (Machine Learning)
+
+Predice la demanda de un día usando como "pistas" (*features*) los valores pasados de demanda
+(*lags*) más la **temperatura pronosticada del día que se quiere predecir** — a esto se le llama
+*future covariate*: una variable que, a diferencia del clima de ayer, sí se puede conocer de
+antemano (un pronóstico meteorológico existe antes de que llegue el día).
+
+Sus hiperparámetros (los "ajustes" internos del modelo — cuántos días mirar hacia atrás,
+qué tan profundos son sus árboles, etc.) se eligieron probando automáticamente **40 combinaciones
+distintas con Optuna**, quedándose con la que mejor predijo en el conjunto de validación. Además,
+usa **early stopping**: en vez de entrenar un número fijo de rondas, corta apenas el error deja
+de mejorar (tope de 50 rondas como máximo).
+
+### N-BEATS (Deep Learning)
+
+Es una red neuronal diseñada específicamente para forecasting. A diferencia de XGBoost, no recibe
+la temperatura del día a predecir (no la "future covariate"), sino **todo el historial reciente**
+de temperatura, nubosidad y variables de calendario — esto se llama *past covariate*: información
+que solo se conoce hasta hoy, no del día que se predice.
+
+Sus hiperparámetros (cuántos días de historia mirar, tamaño y cantidad de capas de la red,
+velocidad de aprendizaje, etc.) se buscaron con **10 combinaciones vía Optuna** — menos que
+XGBoost porque cada intento de entrenar una red neuronal tarda mucho más que un árbol de
+decisión. También usa *early stopping* (corta si no mejora durante 8 épocas seguidas, con un
+tope de 50 épocas).
+
+> **Glosario rápido:**
+> - **Covariate** = variable auxiliar que el modelo usa además de la propia demanda pasada.
+> - **Future covariate** = se conoce de antemano para el momento que se predice (ej. pronóstico
+>   del clima de mañana).
+> - **Past covariate** = solo se conoce hasta hoy, no del día futuro que se predice.
+> - **Optuna** = herramienta que prueba automáticamente muchas combinaciones de configuración y
+>   se queda con la que mejor funciona, en vez de elegirlas a mano.
+> - **Early stopping** = frena el entrenamiento apenas el modelo deja de mejorar, para no perder
+>   tiempo ni sobreajustar.
+> - **Trial** = cada una de las combinaciones de configuración que prueba Optuna.
 
 Ambos con `output_chunk_length` / `forecast_horizon = 1` (predicción a un solo día), y ambos
 reentrenados diariamente durante la evaluación (`retrain=True`) — condición pareja para que la
