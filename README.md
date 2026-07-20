@@ -53,11 +53,10 @@ Licencia CC BY-NC-SA 4.0.
 
 ## Modelos implementados
 
-| Modelo | Categoría | Covariates usadas | Optimización |
-|---|---|---|---|
+| Modelo  | Categoría | Covariates usadas | Optimización |
+|---------|------------|---|---|
 | **XGBoost** | Machine Learning | `future_covariates`: temperatura del día a predecir | Optuna (40 trials): lags, max_depth, learning_rate, subsample, colsample_bytree. Early stopping (tope `n_estimators=50`). |
 | **N-BEATS** | Deep Learning | `past_covariates`: temperatura, nubosidad, feriado, fin de semana, vacaciones escolares | Optuna (10 trials): input_chunk_length, num_stacks, layer_widths, learning_rate, batch_size. Early stopping (patience=8, tope 50 épocas). |
-
 Ambos con `output_chunk_length` / `forecast_horizon = 1` (predicción a un solo día), y ambos
 reentrenados diariamente durante la evaluación (`retrain=True`)condición pareja para que la comparación sea justa.
 
@@ -73,9 +72,6 @@ Métricas calculadas sobre el conjunto de prueba (90 días, oct-dic 2024), con r
 XGBoost obtuvo el mejor desempeño en las cinco métricas.
 
 ## Visualizaciones
-
-> Guardá las imágenes exportadas de cada notebook en una carpeta `imagenes/` junto a este
-> README, con estos nombres (o ajustá las rutas de abajo a los nombres que uses).
 
 **01 · Preprocesamiento — EDA de la demanda diaria**
 
@@ -114,26 +110,16 @@ error más acotado (~-150 a +200 MW) que N-BEATS (~-400 a +200 MW), consistente 
 ![Progreso de la optimización XGBoost](imagenes/05_optuna_progreso.png)
 ![Progreso de la optimización N-BEATS](imagenes/09_optuna_progreso_nbeats.png)
 
-XGBoost converge rápido: baja de ~270 a ~95 MW de RMSE en los primeros 5 trials y se estabiliza.
-N-BEATS converge igual de rápido pero con más ruido entre trials (baja a ~97 MW en el trial 4,
-con trials posteriores que empeoran bastante — ej. trial 8 con RMSE ~190).
 
 **04 · Visualizaciones — Importancia de hiperparámetros**
 
 ![Importancia de hiperparámetros XGBoost](imagenes/06_importancia_hiperparametros.png)
 ![Importancia de hiperparámetros N-BEATS](imagenes/10_importancia_hiperparametros_nbeats.png)
 
-En XGBoost, `learning_rate` domina casi por completo (~99% de la importancia relativa); en
-N-BEATS la importancia está más repartida, liderada por `num_stacks` (~46%), seguida de
-`batch_size`, `learning_rate` y `layer_widths` en niveles similares.
 
 **04 · Visualizaciones — Importancia de features (XGBoost)**
 
 ![Importancia de features XGBoost](imagenes/07_importancia_features.png)
-
-`demanda_lag_1` domina ampliamente (~54% de importancia), seguida por `temperatura_dia_actual`
-(~13%) y `demanda_lag_7` / `demanda_lag_14` (efecto semanal). Consistente con un horizonte de
-predicción de un solo día.
 
 **04 · Visualizaciones — Pronóstico sin reajuste diario (contraste metodológico)**
 
@@ -167,18 +153,6 @@ predicción de un solo día.
   modelo XGBoost pasa de seguir la curva real casi perfectamente (MAPE ~3%) a mantenerse
   sistemáticamente ~300-400 MW por encima de la realidad durante semanas — una demostración
   directa y cuantificada de *concept drift*.
-
-**Limitaciones reconocidas:**
-1. El reajuste de N-BEATS usa un presupuesto fijo de épocas (sin early stopping) en cada paso
-   del walk-forward, por costo computacional.
-2. XGBoost usa la temperatura como *future covariate* (asumida conocida) — en producción real
-   sería un pronóstico meteorológico de un día, no el valor observado.
-3. La comparación se hace sobre un único conjunto de test (90 días, oct-dic 2024); no se valida
-   con múltiples ventanas de tiempo del año.
-
-**Trabajo futuro:** cuantificar la degradación del error en función del tiempo desde el último
-reajuste; probar frecuencias de reentrenamiento intermedias (semanal, quincenal); dar a N-BEATS
-el mismo rigor de early stopping que XGBoost en cada reajuste (requeriría GPU).
 
 ## Estructura del repositorio
 
