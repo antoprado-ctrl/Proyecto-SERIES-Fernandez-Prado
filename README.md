@@ -56,7 +56,7 @@ Licencia CC BY-NC-SA 4.0.
 | Modelo  | Categoría | Covariates usadas | Optimización |
 |---------|------------|---|---|
 | **XGBoost** | Machine Learning | `future_covariates`: temperatura del día a predecir | Optuna (40 trials): lags, max_depth, learning_rate, subsample, colsample_bytree. Early stopping (tope `n_estimators=50`). |
-| **N-BEATS** | Deep Learning | `past_covariates`: temperatura, nubosidad, feriado, fin de semana, vacaciones escolares | Optuna (10 trials): input_chunk_length, num_stacks, layer_widths, learning_rate, batch_size. Early stopping (patience=8, tope 50 épocas). |
+| **N-BEATS** | Deep Learning | `past_covariates`: temperatura, nubosidad, feriado, fin de semana, vacaciones escolares | Optuna (40 trials, acelerado por GPU): input_chunk_length, num_stacks, layer_widths, learning_rate, batch_size. Early stopping (patience=8, tope 50 épocas).|
 
 Ambos con `output_chunk_length` / `forecast_horizon = 1` (predicción a un solo día), y ambos
 reentrenados diariamente durante la evaluación (`retrain=True`)condición pareja para que la comparación sea justa.
