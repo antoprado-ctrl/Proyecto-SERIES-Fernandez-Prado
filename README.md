@@ -102,8 +102,7 @@ XGBoost por debajo de N-BEATS en las tres métricas, consistente con la tabla de
 
 ![Análisis de residuales por modelo](imagenes/04_analisis_residuales.png)
 
-Residuales centrados cerca de cero y sin tendencia sistemática marcada; XGBoost con rango de
-error más acotado (~-150 a +200 MW) que N-BEATS (~-400 a +200 MW), consistente con su mejor RMSE.
+
 
 **04 · Visualizaciones — Progreso de Optuna**
 
