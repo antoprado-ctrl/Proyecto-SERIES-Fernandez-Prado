@@ -57,6 +57,7 @@ Licencia CC BY-NC-SA 4.0.
 |---------|------------|---|---|
 | **XGBoost** | Machine Learning | `future_covariates`: temperatura del día a predecir | Optuna (40 trials): lags, max_depth, learning_rate, subsample, colsample_bytree. Early stopping (tope `n_estimators=50`). |
 | **N-BEATS** | Deep Learning | `past_covariates`: temperatura, nubosidad, feriado, fin de semana, vacaciones escolares | Optuna (10 trials): input_chunk_length, num_stacks, layer_widths, learning_rate, batch_size. Early stopping (patience=8, tope 50 épocas). |
+
 Ambos con `output_chunk_length` / `forecast_horizon = 1` (predicción a un solo día), y ambos
 reentrenados diariamente durante la evaluación (`retrain=True`)condición pareja para que la comparación sea justa.
 
@@ -69,7 +70,7 @@ Métricas calculadas sobre el conjunto de prueba (90 días, oct-dic 2024), con r
 | **XGBoost** | 92.42 | 76.84 | 3.03 | 3.06 | 0.867 |
 | N-BEATS | 109.98 | 87.31 | 3.49 | 3.46 | 0.812 |
 
-XGBoost obtuvo el mejor desempeño en las cinco métricas.
+
 
 ## Visualizaciones
 
